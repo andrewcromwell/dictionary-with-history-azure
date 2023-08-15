@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  description: Dictionary with History API
+  version: 3.0.0
+  title: Dictionary with History API
+  contact:
+    email: andrew.cromwell@hotmail.com
+
+components:
+  schemas:
+    LookupRequest:
+      type: object
+      required:
+        - word
+        - media
+      description: A word to look up and where the word was found
+      properties:
+        word:
+          type: string
+        media:
+          type: string
+    LookupResponse:
+      type: object
+      properties:
+        word:
+          type: string
+        lookupInfo:
+          $ref: object
+        definition:
+          type: object
+      description: A word definition and lookup history        
+
+  requestBodies:
+    LookupRequest:
+      description: The Lookup Item
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LookupRequest"
+
+  responses:
+    LookupResponse:
+      description: A Lookup response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LookupResponse"
+
+paths:
+  /lookupWord:
+    post:
+      operationId: LookupWord
+      summary: Gets the word definition and the lookup history
+      tags:
+        - LookupWord
+      requestBody:
+        $ref: "#/components/requestBodies/LookupRequest"
+      responses:
+        200:
+          $ref: "#/components/responses/LookupResponse"
+        400:
+          description: Invalid request schema
