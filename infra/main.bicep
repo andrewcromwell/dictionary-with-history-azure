@@ -50,6 +50,7 @@ module cosmosDB './app/db.bicep' = {
     keyVaultName: keyVault.outputs.name
     location: location
     tags: tags
+    accountName: 'dictionary-cosmos-db-account-${resourceToken}'
   }
 }
 

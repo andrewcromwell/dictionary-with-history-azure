@@ -3,11 +3,12 @@ param tags object = {}
 
 param databaseName string = ''
 param keyVaultName string
+param accountName string = ''
 
 module cosmosDB '../core/database/cosmos/sql/cosmos-sql-db.bicep' = {
   name: 'cosmosDB'
   params: {
-    accountName: 'dictionary-cosmos-db-account'
+    accountName: accountName
     databaseName: databaseName
     location: location
     tags: tags
