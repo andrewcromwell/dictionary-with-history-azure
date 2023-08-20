@@ -35,6 +35,25 @@ export default function Search() {
     }
   }
 
+  function addKeys(searchResponse){
+    if (searchResponse.definition && !searchResponse.definition.error && searchResponse.definition.definitions){
+      searchResponse.definition.definitions =
+        searchResponse.definition.definitions.map(x =>
+          {
+            var definition = { ...x, key: crypto.randomUUID() };
+            if (definition.meanings){
+              definition.meanings = definition.meanings.map(y => { return { meaning: y, key: crypto.randomUUID() } });
+            }
+            return definition;
+          });
+    }
+
+    if (searchResponse.lookupInfo && searchResponse.lookupInfo.lookups){
+      searchResponse.lookupInfo.lookups =
+        searchResponse.lookupInfo.lookups.map(x => { return { ...x, key: crypto.randomUUID() }});
+    }
+  }
+
   function makePostSearchRequest(searchTerm, media){
     instance.acquireTokenSilent({
         ...loginRequest,
@@ -62,6 +81,7 @@ export default function Search() {
       .post(baseURL + endpoint, body, requestConfig)
       .then(res => {
         const searchResponse = res.data;
+        addKeys(searchResponse);
         setSearchResponse(searchResponse);
         fields.word = "";
         fields.media = "";
@@ -118,20 +138,20 @@ export default function Search() {
     return (
       <>
       <p className="h2">{word}</p>
-        {searchResponse.definition.definitions.map(({ partOfSpeech, meanings }) => (
-          <>
+        {searchResponse.definition.definitions.map(({ partOfSpeech, meanings, key }) => (
+          <div key={key}>
             <span className="fw-bold">{partOfSpeech.trim()}</span>
             <br />
             <ol>
-              {meanings.map(meaning => (
-                <li>
+              {meanings.map(m => (
+                <li key={m.key}>
                   <span className="text-muted">
-                  {meaning.trim()}
+                  {m.meaning.trim()}
                   </span>
                 </li>
               ))}
             </ol>
-          </>
+          </div>
         ))}
       </>
     );
@@ -148,8 +168,8 @@ export default function Search() {
             <ListGroup.Item action className="py-3 text-nowrap text-truncate">
                 <span className="ms-2 fw-bold">You've searched this word {searchHistory.numberOfLookups} time(s)</span>
             </ListGroup.Item>
-            {searchHistory.lookups.map(({ lookupDate, media }) => (
-                <ListGroup.Item action className="text-nowrap text-truncate">
+            {searchHistory.lookups.map(({ lookupDate, media, key }) => (
+                <ListGroup.Item action className="text-nowrap text-truncate" key={key}>
                     <span className="text-muted">Media Content: {media.trim()}</span>
                     <br />
                     <span className="text-muted">
